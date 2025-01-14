@@ -11,7 +11,7 @@ app.use(cors());
 app.use(json());
 
 // Conexión a SQLite
-const db = new sqlite3.Database('./events.db', (err) => {
+const db = new sqlite3.Database('./eventos.db', (err) => {
     if (err) {
         console.error('Error al conectar a SQLite:', err.message);
     } else {
@@ -19,27 +19,34 @@ const db = new sqlite3.Database('./events.db', (err) => {
 
         // Crear tabla 'events' si no existe
         db.run(
-            `CREATE TABLE IF NOT EXISTS events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                description TEXT,
-                date TEXT NOT NULL,
-                location TEXT
+            `CREATE TABLE IF NOT EXISTS eventos (
+                evento_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
+                descripcion TEXT,
+                fecha_inicio DATE NOT NULL,
+                hora_inicio TIME NOT NULL,
+                duracion INTEGER,
+                ubicacion TEXT,
+                cupo_max INTEGER,
+                cupo_actual INTEGER,
+                estado TEXT CHECK (estado IN ('activo', 'inactivo')),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP 
             )`,
             (err) => {
                 if (err) {
-                    console.error('Error al crear la tabla events:', err.message);
+                    console.error('Error al crear la tabla eventos:', err.message);
                 } else {
-                    console.log('Tabla events verificada/creada correctamente');
+                    console.log('Tabla eventos verificada/creada correctamente');
                 }
             }
         );
+        
     }
 });
 
 // Ruta para obtener todos los eventos
-app.get('/events', (req, res) => {
-    db.all('SELECT * FROM events', [], (err, rows) => {
+app.get('/eventos', (req, res) => {
+    db.all('SELECT * FROM eventos', [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
         } else {
@@ -51,10 +58,10 @@ app.get('/events', (req, res) => {
 
 
 // Ruta para agregar un evento
-app.post('/events', (req, res) => {
+app.post('/eventos', (req, res) => {
     const { title, description, date, location } = req.body;
     db.run(
-        'INSERT INTO events (title, description, date, location) VALUES (?, ?, ?, ?)',
+        'INSERT INTO eventos (title, description, date, location) VALUES (?, ?, ?, ?)',
         [title, description, date, location],
         function (err) {
             if (err) {
