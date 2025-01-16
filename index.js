@@ -59,10 +59,10 @@ app.get('/eventos', (req, res) => {
 
 // Ruta para agregar un evento
 app.post('/eventos', (req, res) => {
-    const { title, description, date, location } = req.body;
+    const { titulo, descripcion, fecha_inicio, hora_inicio, duracion, ubicacion, cupo_max, cupo_actual, estado } = req.body;
     db.run(
-        'INSERT INTO eventos (title, description, date, location) VALUES (?, ?, ?, ?)',
-        [title, description, date, location],
+        'INSERT INTO eventos (titulo, descripcion, fecha_inicio, hora_inicio, duracion, ubicacion, cupo_max, cupo_actual, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [titulo, descripcion, fecha_inicio, hora_inicio, duracion, ubicacion, cupo_max, cupo_actual, estado],
         function (err) {
             if (err) {
                 res.status(500).json({ error: err.message });
